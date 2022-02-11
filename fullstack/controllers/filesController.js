@@ -1,55 +1,125 @@
 
-//const delimiters = [' ', '\\t', '\\n', '\\.', ',', '!', '\\?', '"', '--'];
 
-const countWords = (text) => {
-
-    let delimiters = /(?:[\r\n\t ,.?!&+:;"_]|(?:--))+/
+const countWords = (text, ignoreCase) => {
+    //let delimiters = /(?:[\r\n\t ,.?!&+:;"_*]|(?:--))+/
+    let delimiters = /(?:[^a-zA-Z'])+/
     let alphabet = /[a-zA-Z]+/
 
+    //Split text by delimiters
     const words = text.split(delimiters).filter((s) => alphabet.test(s));
 
-    
-    const map = {}
+    //console.log(words);
+    const dict = {}
     words.forEach((e) => {
-        e = e.toLowerCase();
-        if (map[e]) {
-            map[e] = map[e] + 1;
+        //If we're ignoring case, change the current word to lowercase.
+        if (ignoreCase) {
+            e = e.toLowerCase();
+        }
+
+        //Build the """dictionary""".
+        if (dict[e]) {
+            dict[e] = dict[e] + 1;
         } else {
-            map[e] = 1;
+            dict[e] = 1;
         }
     });
-    let sorted = Object.fromEntries(
-        Object.entries(map).sort(([,a], [,b]) => b-a)
-    );
+    return dict;
+}
 
+//Sorts the dictionary.
+const sortDictionaryByVal = (dict, ascending) => {
+    let sorted;
+
+    //You could put the ascending check inside of the .sort() call to reduce the number of lines.
+    //However, that would be inefficient.
+    if (ascending) {
+        sorted = Object.fromEntries(
+            Object.entries(dict).sort(([,a], [,b]) => a-b)
+        );
+    } else {
+        sorted = Object.fromEntries(
+            Object.entries(dict).sort(([,a], [,b]) => b-a)
+        );
+    }
     return sorted;
 }
 
-const getMostCommonWords = (sorted) => {
-    let filtered = Object.fromEntries(
-        Object.entries(sorted).filter((kvp, i) => Object.values(sorted)[i] == Object.values(sorted)[0])  
+//Never actually used.
+const sortDictionaryByKey = (dict, ascending) => {
+    //You could put the ascending check inside of the .sort() call to reduce the number of lines.
+    //However, that would be inefficient.
+    if (ascending) {
+        sorted = Object.fromEntries(
+            Object.entries(dict).sort(([a,], [b,]) => a-b)
+        );
+    } else {
+        sorted = Object.fromEntries(
+            Object.entries(dict).sort(([a,], [b,]) => b-a)
+        );
+    }
+    return sorted;
+}
+
+const getKeysWithValueMatchingIndex = (sorted, idx) => {
+    let filtered = [];
+    let max = sorted[Object.keys(sorted)[0]];
+    let val = max;
+    let i = 0;
+    let len = Object.keys(sorted).length;
+    console.log("val: " + val);
+    console.log("max: " + max);
+    console.log("len: " + len);
+    while (val == max && i < len) {
+        let key = Object.keys(sorted)[i];
+        val = sorted[key];
+        if (val != max) {
+            break;
+        }
+        console.log(key);
+        filtered.push(key); 
+        i++;
+    }
+    /*let filtered = Object.fromEntries(
+        Object.entries(sorted).filter((kvp, i) => Object.values(sorted)[i] == Object.values(sorted)[idx])  
     );
+    return Object.keys(filtered);
+    */
+
+    console.log(filtered)
     return filtered;
 }
 
-const processText = (text) => {
-    
-    let sorted = countWords(text);
-    let filtered = getMostCommonWords(sorted);
+const getMostCommonWords = (text) => {
+    //Get a """dictionary""" of words : counts
+    let wordCountDict = countWords(text);
+    console.log(":(");
+
+    //Sort the """dictionary"""
+    let sortedWordCountDict = sortDictionaryByVal(wordCountDict, false);
+    console.log(":(");
+    //console.log(sortedWordCountDict);
+
+    //Get all words with the same count as the word at index 0 -> All words with the same, highest count.
+    let mostCommonWords = getKeysWithValueMatchingIndex(sortedWordCountDict, 0);
+    console.log(":(");
+
+    return mostCommonWords;
+}
 
 
+const wrapWordInText = (text, word, pre, post) => {
+    //Capture word with negative lookbehind and lookahead for any alphabetic characters.
+    //Including both a-z and A-Z is superfluous seeing as we use the case insetivity flag, 'i'.
+    let regexString = "(?<![a-zA-Z])(" + word + ")(?![a-zA-Z])";
+    return text.replace(RegExp(regexString, 'gi'), pre + '$1' + post);
+}
 
-    //console.log(map);
-    console.log(sorted);
-    console.log(filtered);
-
+const wrapWordsInText = (text, words, pre, post) => {
     let editedText = text;
-    Object.keys(filtered).forEach((key) => {
-        editedText = editedText.replace(RegExp('(' + key + ')', 'gi'), 'foo$1bar');
+    words.forEach((word) => {
+        editedText = wrapWordInText(editedText, word, pre, post);
     });
-    
-    console.log(editedText);
-
+    return editedText;
 }
 
 const post = (req, res) => {
@@ -61,9 +131,22 @@ const post = (req, res) => {
 
     if (req.files && req.files.file) {    
         const file = req.files.file;
-        console.log(file.data.toString());
-        const editedText = processText(file.data.toString());
-        res.status(200).send(editexText);
+        const text = file.data.toString();
+        const words = getMostCommonWords(text);
+        
+        console.log("---");
+        console.log(words);
+        let editedText = wrapWordsInText(text, words, 'foo', 'bar');
+
+        res.setHeader('Content-Type', 'application/json');
+        
+        const data = {
+            text: editedText,
+            words: words, 
+        }
+
+        console.log(":)");
+        res.json(data);
     }
 }
 

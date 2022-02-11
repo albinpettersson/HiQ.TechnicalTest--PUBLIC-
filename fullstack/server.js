@@ -1,13 +1,13 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
 
-const fileRouter = require('./routes/filesRouter.js');
+const routes = require('./routes');
 
 const app = express();
 
 app.use(fileUpload());
 
-app.use('/files', fileRouter);
+app.use('/files', routes.files);
 
 app.post('/upload', (req, res) => {
     if(req.files === null) {

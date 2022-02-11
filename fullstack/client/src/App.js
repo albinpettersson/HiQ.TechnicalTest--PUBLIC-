@@ -6,19 +6,37 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCoffee, faHeart } from '@fortawesome/free-solid-svg-icons';
 //import { fab } from '@fortawesome/free-brands-svg-icons';
 import Footer from "./components/Footer/Footer";
-import { CssBaseline } from "@mui/material";
+import { Box, CssBaseline, createTheme } from "@mui/material";
+import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
+import { blue, deepPurple, pink } from "@mui/material/colors";
 
 library.add( /*fab,*/ faCoffee, faHeart )
 
+
+const darkTheme  = createTheme({
+	palette: {
+	  mode: 'dark',
+	  primary: pink,
+	  secondary: blue,
+	}
+});
+
 const Layout = () => {
-	return (
-		<>
+	return (     
+		<MuiThemeProvider theme={darkTheme}>
 			<CssBaseline />
-			<main>
-				<Outlet />
-			</main>
-			<Footer />
-		</>
+			<Box 
+				minHeight="100vh" 
+				sx={{ display: "flex", flexDirection: "column" }}
+			>
+				<Box 
+					sx={{display: "flex", flexGrow: 1}}
+				>
+					<Outlet />
+				</Box>
+				<Footer />
+			</Box>
+		</MuiThemeProvider>
 	);
 }
 

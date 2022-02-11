@@ -33,9 +33,15 @@ const FileInput = (props) => {
     
 
     return (
-        <Box {...props} sx={{ border: 1, borderRadius: 2 }} display="flex" justifyContent="center" alignItems="center">
+        <Box 
+            {...props} 
+            sx={{ border: 1, borderRadius: 2, borderColor: "primary.main" }} 
+            display="flex" 
+            justifyContent="center" 
+            alignItems="center"
+        >
 
-            <Box flex={1} px={2} >
+            <Box flex={1} px={2}>
                 <Typography>
                     {file ? fileName : "Choose File"}
                 </Typography>
