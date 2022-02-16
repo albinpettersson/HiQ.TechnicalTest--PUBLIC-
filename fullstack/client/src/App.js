@@ -16,8 +16,6 @@ library.add( /*fab,*/ faCoffee, faHeart )
 const darkTheme  = createTheme({
 	palette: {
 	  mode: 'dark',
-	  primary: pink,
-	  secondary: blue,
 	}
 });
 
