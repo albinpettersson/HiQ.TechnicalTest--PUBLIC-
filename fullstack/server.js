@@ -1,46 +1,25 @@
+//Import npm modules
 const express = require('express');
 const fileUpload = require('express-fileupload');
 
+
+//Import all of the other things.
 const routes = require('./routes');
 
 const app = express();
 
+//Middleware
 app.use(fileUpload());
 
+//Define routes
 app.use('/files', routes.files);
 
-app.post('/upload', (req, res) => {
-    if(req.files === null) {
-        return res.status(400).json({ msg: 'No file uploaded' });
-    }
-
-
-    if (req.files && req.files.file) {    
-        const file = req.files.file;
-        console.log(file.data.toString());
-    }
+//404 any routes that aren't defined.
+app.use((req, res, next) => {
+	const error = new Error("Not found!");
+	error.status = 404;
+	next(error);
 });
 
+//Start the express server.
 app.listen(5000, () => console.log("Express server running on port 5000"));
-
-/*
-app.use(express.json());
-app.get('/tshirt', (req, res) => {
-	res.status(200).send({
-		tshirt: '👕',
-		size: 'large',
-	})
-});
-
-app.post('/tshirt/:id', (req, res) => {
-	const { id } = req.params;
-	const { logo } = req.body;
-
-	if (!logo) {
-		res.status(418).send({message: 'Logo needed'});
-	}
-
-	res.send({
-		tshirt: `👕 with ${logo}`
-	})
-});*/
