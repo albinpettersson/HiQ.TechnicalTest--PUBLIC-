@@ -29,7 +29,10 @@ Q: What would you add to your solution if you had more time? This question is es
 A: 
 - Unit tests
 - A prettier frontend
+- Error messages should actually be shown to end-users that don't browse the web with their browser consoles open.
+- Some sort of loading indicator when processing files would have been nice.
 - In-code frontend documentation
+
 
 ---
 

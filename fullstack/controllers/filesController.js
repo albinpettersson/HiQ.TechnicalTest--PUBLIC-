@@ -18,7 +18,6 @@ const countWords = (text, ignoreCase) => {
     //Split text by delimiters
     const words = text.split(delimiters).filter((s) => alphabet.test(s));
 
-    //console.log(words);
     const dict = {}
     words.forEach((e) => {
         //If we're ignoring case, change the current word to lowercase.
@@ -96,16 +95,12 @@ const getKeysWithValueMatchingIndex = (sorted, idx) => {
     let val = max;
     let i = 0;
     let len = Object.keys(sorted).length;
-    console.log("val: " + val);
-    console.log("max: " + max);
-    console.log("len: " + len);
     while (val == max && i < len) {
         let key = Object.keys(sorted)[i];
         val = sorted[key];
         if (val != max) {
             break;
         }
-        console.log(key);
         filtered.push(key); 
         i++;
     }
@@ -115,7 +110,6 @@ const getKeysWithValueMatchingIndex = (sorted, idx) => {
     return Object.keys(filtered);
     */
 
-    console.log(filtered)
     return filtered;
 }
 
@@ -128,15 +122,12 @@ const getKeysWithValueMatchingIndex = (sorted, idx) => {
 const getMostCommonWords = (text) => {
     //Get a """dictionary""" of words : counts
     let wordCountDict = countWords(text);
-    console.log(":(");
 
     //Sort the """dictionary"""
     let sortedWordCountDict = sortDictionaryByVal(wordCountDict, false);
-    console.log(":(");
 
     //Get all words with the same count as the word at index 0 -> All words with the same, highest count.
     let mostCommonWords = getKeysWithValueMatchingIndex(sortedWordCountDict, 0);
-    console.log(":(");
 
     return mostCommonWords;
 }
@@ -202,8 +193,6 @@ const validateStringHash = (text, hash) => {
  */
 const validateFileProperties = (file) => {
 	//TODO: Clean up.
-    console.log(file);
-    console.log("typeof: " + (typeof file['tempFilePath']));
 
 	if (!file.hasOwnProperty('name') || typeof file['name'] != 'string'
 		|| !file.hasOwnProperty('data')         || typeof file['data'] != 'object'
@@ -215,6 +204,7 @@ const validateFileProperties = (file) => {
 		|| !file.hasOwnProperty('md5')          || typeof file['md5'] != 'string'
 		|| !file.hasOwnProperty('mv')          	|| typeof file['mv'] != 'function'
 	) {
+        console.log("false");
 		return false;
 	}
 	return true;
@@ -229,21 +219,15 @@ const validateFileProperties = (file) => {
 const validatePostRequest = (req) =>{
 	//Check that the request has the property 'files', and that that property in turn has the property 'file'.
     if(req.files === null || req.files.file === null) {
-        console.log("No file provided");
         return { valid: false, msg: 'No file provided' }
     }
     
     const file = req.files.file;
 
 	//Check that the file provided in the request matches the format expected when using express-fileupload.
-    if (!validateFileProperties) {
+    if (!validateFileProperties(file)) {
 		return { valid: false, msg: 'Invalid file data' }
 	}
-
-	//TODO: Clean up.
-    console.log(file);
-	console.log(file.size);
-	console.log(file.data.length);
 
 	//Check that the file is not too large.
     if (file.data.length > MAX_FILE_SIZE || file.size > MAX_FILE_SIZE) {
@@ -255,7 +239,6 @@ const validatePostRequest = (req) =>{
         return { valid: false, msg: 'Invalid hash.' }
     }
 
-    console.log(file);
 	//If we've gotten this far, the request is considered valid.
 	return { 
         valid: true, 
@@ -272,7 +255,6 @@ const validatePostRequest = (req) =>{
  * @returns {void}
  */
 const post = (req, res) => {
-    console.log("router reached");
 
 	try {
 		//Validate the request.
@@ -283,7 +265,6 @@ const post = (req, res) => {
 			res.status(400).json({ msg: validateResult.msg });
 		} else {
 			//Otherwise, process the file provided.
-			console.log("valid");
 			const file = req.files.file;
 
 			if (file) {
@@ -293,8 +274,6 @@ const post = (req, res) => {
 				const words = getMostCommonWords(text);
 				
 				//TODO: Clean up.
-				console.log("---");
-				console.log(words);
 
 				//Wrap any occurrences of the most common word(s) with 'foo' and 'bar'.
 				let editedText = wrapWordsInText(text, words, 'foo', 'bar');

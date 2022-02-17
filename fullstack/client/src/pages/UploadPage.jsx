@@ -16,10 +16,8 @@ const UploadPage = () => {
 
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState("");
-    //const [uploadedFile, setUploadedFile] = useState({});
 
     const onFileInput = (file) => {
-        console.log(file)
         setFile(file);
         setFileName(file.name);
     }
@@ -41,26 +39,22 @@ const UploadPage = () => {
 
     const onFormSubmit = async (e) => {
         e.preventDefault();
-        console.log(fileName);
         const formData = new FormData();
         formData.append('file', file);
 
         try {
-            console.log("Sending file");
             const res = await axios.post('/files', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            console.log("File successfully uploaded");
 
             setResult(res.data);
 
         } catch (err) {
-            if (!err.status) {
+            if (!err.response || !err.response.status) {
                 console.log("Something went really wrong.");
-            }
-            if (err.status === 500) {
+            } else if (err.response.status === 500) {
                 console.log("There was a problem with the server");
             } else {
                 console.log(err.response.data.msg);

@@ -16,19 +16,11 @@ const FileInput = (props) => {
 
     const onChange = (e) => {
 
-        console.log(e.target.files[0].name);
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
             setFileName(e.target.files[0].name);
-            //console.log(fileName);
-        } else {
-            console.log("not true");
+            onFileInput(e.target.files[0]);
         }
-
-        console.log("file selected");
-
-        onFileInput(e.target.files[0]);
-
     }
     
 
