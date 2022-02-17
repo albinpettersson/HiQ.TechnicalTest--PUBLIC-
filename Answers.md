@@ -1,6 +1,6 @@
 Q: How long time did you end up spending on this coding test?
 
-A: Probably somewhere around 6-10 hours, depending on exactly what I'd count as time "spent on this test". For example: I've been meaning to get more familiar with regular expressions, and finally put some time into it because of this assignment.
+A: Probably somewhere around 8-12 hours, depending on exactly what I'd count as time "spent on this test". For example: I've been meaning to get more familiar with regular expressions, and finally put some time into it because of this assignment.
 
 ---
 
